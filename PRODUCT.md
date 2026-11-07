@@ -11,7 +11,7 @@ React, TypeScript, and SVG, as requested in the supplied brief.
 ## Product purpose
 
 Explore pencil illustrations of Paris, Venice, Kyoto, Lisbon, Istanbul, Amsterdam, Prague, Chefchaouen, Havana, and Seoul and find six cats in each picture.
-The picture leads immediately, with only a small cat icon and counter over its top-right corner.
+The picture leads immediately, with only a small cat icon and counter at the top-right of the page.
 Clicking a cat lightens it and updates a small counter.
 Finding every cat automatically loads another picture.
 

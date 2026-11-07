@@ -38,7 +38,7 @@ On a touch screen, pinch to zoom and drag to explore.
 With the picture focused, use `+` / `-` to zoom, arrow keys to pan, and `0` to reset.
 
 Run `npm run lint` and `npm test` for code and geometry checks.
-Install Chromium with `npx playwright install chromium`, then run `npm run test:e2e` for desktop and phone gameplay checks.
+Install Chromium and WebKit with `npx playwright install chromium webkit`, then run `npm run test:e2e` for desktop and phone gameplay checks.
 
 ## Docs
 

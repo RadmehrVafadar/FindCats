@@ -94,7 +94,7 @@ for (const puzzle of puzzles) {
     await page.goto('/')
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
     await expect(page.getByRole('group', { name: `${puzzle.location} hidden cat illustration` })).toBeVisible()
-    if (puzzle.id === 'seoul') await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(255, 255, 255)')
+    await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(0, 0, 0)')
     expect(sceneSpots[puzzle.id]).toHaveLength(6)
     for (const [index, [x, y]] of sceneSpots[puzzle.id].entries()) {
       await clickArtwork(page, x, y)
@@ -116,7 +116,8 @@ test('keyboard access finds cats, and storage failure does not prevent play', as
   await expect(page.getByRole('group', { name: /hidden cat illustration/ })).toHaveAttribute('viewBox', /682\.666/)
 })
 
-test('two-finger pinch zooms without finding cats, followed by a real touch tap', async ({ page, context }) => {
+test('two-finger pinch zooms without finding cats, followed by a real touch tap', async ({ page, context, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Touch injection uses the Chromium DevTools Protocol.')
   await open(page)
   const cdp = await context.newCDPSession(page)
   await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true })
@@ -162,10 +163,11 @@ test('only the unboxed cat counter overlays the largest uncropped picture', asyn
   const viewport = page.viewportSize()!
   expect(picture.width).toBeCloseTo(Math.min(viewport.width, viewport.height * 2 / 3), 0)
   expect(picture.height / picture.width).toBeCloseTo(1.5)
-  expect(counter.x).toBeGreaterThan(picture.x + picture.width / 2)
-  expect(counter.x + counter.width).toBeLessThan(picture.x + picture.width)
-  expect(counter.y).toBeGreaterThan(picture.y)
-  expect(counter.y + counter.height).toBeLessThan(picture.y + picture.height)
+  expect(picture.x + picture.width / 2).toBeCloseTo(viewport.width / 2, 0)
+  expect(picture.y + picture.height / 2).toBeCloseTo(viewport.height / 2, 0)
+  expect(counter.x + counter.width).toBeCloseTo(viewport.width - 16, 0)
+  expect(counter.y).toBeCloseTo(16, 0)
+  await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(0, 0, 0)')
   const decoration = await page.locator('.progress').evaluate(element => {
     const style = getComputedStyle(element)
     return { background: style.backgroundColor, shadow: style.boxShadow, pointerEvents: style.pointerEvents }
@@ -174,6 +176,7 @@ test('only the unboxed cat counter overlays the largest uncropped picture', asyn
 })
 
 test('the counter switches ink for dark, light, and midtone artwork', async ({ page }, info) => {
+  await page.setViewportSize({ width: 400, height: 600 })
   await page.addInitScript(() => localStorage.clear())
   for (const [background, foreground] of [['#111111', 'rgb(255, 255, 255)'], ['#ffffff', 'rgb(0, 0, 0)'], ['#777777', 'rgb(0, 0, 0)']]) {
     await page.route('**/art/paris.png', route => route.fulfill({ contentType: 'image/svg+xml', body: `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><path fill="${background}" d="M0 0h1024v1536H0z"/></svg>` }))
@@ -184,11 +187,16 @@ test('the counter switches ink for dark, light, and midtone artwork', async ({ p
     await expect(counter.locator('svg')).toHaveCSS('color', foreground)
     await expect(counter).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await page.screenshot({ path: `.impeccable/review/${info.project.name}-counter-${background.slice(1)}.png`, fullPage: true })
+    await page.setViewportSize({ width: 390, height: 844 })
+    for (let i = 0; i < 3; i++) await page.locator('.picture').press('+')
+    await expect(counter).toHaveCSS('color', 'rgb(0, 0, 0)')
+    await page.setViewportSize({ width: 400, height: 600 })
     await page.unroute('**/art/paris.png')
   }
 })
 
 test('counter contrast follows the artwork during zoom, pan, and resize', async ({ page }) => {
+  await page.setViewportSize({ width: 400, height: 600 })
   await page.route('**/art/paris.png', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><path fill="white" d="M0 0h1024v1536H0z"/><path fill="#111" d="M0 512h1024v1024H0z"/></svg>' }))
   await open(page)
   const art = page.locator('.picture')
