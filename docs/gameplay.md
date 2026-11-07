@@ -83,10 +83,11 @@ Automated phone checks use Chromium device emulation; physical-phone playtesting
 Deploy `dist/` at the standalone Vercel origin root.
 In the portfolio, keep the external rewrite `/find-cats/:path*` to `https://find-cats-nine.vercel.app/:path*`, including scripts, styles, fonts, and images.
 Place it before any portfolio catch-all so asset requests cannot return portfolio HTML.
-Redirect `/find-cats` to `/find-cats/` and preserve that trailing slash, since document-relative URLs otherwise resolve at the portfolio root.
-Ensure the portfolio's slash normalization does not redirect `/find-cats/` back to `/find-cats`.
+Rewrite `/find-cats` to `https://find-cats-nine.vercel.app/` as well; do not append a literal `*` to that destination.
+The HTML sets its document base to `/find-cats/` before loading assets when visited at slashless `/find-cats`, preserving the requested URL, query string, and fragment without a redirect.
+The production HTML starts bundles and styles through inline loaders so speculative browser preloads cannot request portfolio-root assets before that base is applied.
 Do not add a portfolio-root `/assets/` rewrite; those paths belong to the portfolio.
 No HTML response rewriting, CORS changes, or asset-host configuration is required.
 
-`npm run test:e2e` builds once and checks both a root preview and an HTTP proxy that strips `/find-cats/`, rejects requests outside the mount, and preserves upstream content types.
+`npm run test:e2e` builds once and checks a root preview plus an HTTP proxy at `/find-cats` and `/find-cats/` that strips the prefix without redirects, rejects requests outside the mount, and preserves upstream content types.
 Production checks load all ten illustrations, inspect script/style/font/image request paths, find cats, advance scenes, zoom, and refresh.
