@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { clampCamera, findCat, HOME, nextScene, pointInPolygon, readSession, shuffle, zoomCamera } from '../src/game.ts'
 import { puzzles } from '../src/puzzles.ts'
 
@@ -9,10 +10,10 @@ test('a shuffled collection exhausts before repeating and avoids the last scene 
   let session = nextScene(null, ids, () => 0.5)
   const seen = [session.current]
   for (let i = 1; i < ids.length; i++) { session = nextScene(session, ids, () => 0.5); seen.push(session.current) }
-  assert.equal(new Set(seen).size, 3)
+  assert.equal(new Set(seen).size, ids.length)
   assert.equal(session.remaining.length, 0)
   assert.notEqual(nextScene(session, ids, () => 0.5).current, session.current)
-  assert.deepEqual(ids, ['paris', 'venice', 'kyoto'])
+  assert.equal(new Set(ids).size, ids.length)
   assert.deepEqual([...shuffle(ids, () => 0.5)].sort(), [...ids].sort())
 })
 
@@ -49,6 +50,10 @@ test('zoom stays within the artwork and preserves the requested focal point', ()
 
 test('each scene has six distinct cats with valid, separate polygons', () => {
   for (const puzzle of puzzles) {
+    const artwork = readFileSync(new URL(`../public${puzzle.image}`, import.meta.url))
+    assert.equal(artwork.subarray(1, 4).toString(), 'PNG')
+    assert.equal(artwork.readUInt32BE(16), puzzle.width, `${puzzle.id} artwork width matches targets`)
+    assert.equal(artwork.readUInt32BE(20), puzzle.height, `${puzzle.id} artwork height matches targets`)
     assert.equal(puzzle.cats.length, 6)
     assert.equal(new Set(puzzle.cats.map(c => c.id)).size, 6)
     for (const cat of puzzle.cats) {

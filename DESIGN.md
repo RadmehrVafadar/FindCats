@@ -1,13 +1,12 @@
 ---
 name: Find the Cats
-description: Graphite travel illustrations on ivory paper, with quiet controls.
+description: Graphite travel illustrations on ivory paper, with an unboxed cat counter.
 colors:
   paper: "#f5f0e6"
   ink: "#484738"
   quiet: "#716c5e"
   accent: "#53634e"
   control: "#faf7ef"
-  control-hover: "#e9e5d8"
 typography:
   title:
     fontFamily: "Lora, Georgia, serif"
@@ -18,36 +17,17 @@ typography:
     fontFamily: "DM Sans, sans-serif"
     fontSize: "14px"
     fontWeight: 400
-  caption:
-    fontFamily: "DM Sans, sans-serif"
-    fontSize: "11px"
-    fontWeight: 400
-    lineHeight: 1.5
-rounded:
-  button: "4px"
-  controls: "6px"
 spacing:
   compact: "10px"
   regular: "16px"
   wide: "24px"
 components:
-  zoom-controls:
-    backgroundColor: "{colors.control}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.controls}"
-  zoom-button:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.button}"
-    padding: "0 10px"
-  zoom-button-hover:
-    backgroundColor: "{colors.control-hover}"
   progress:
     textColor: "{colors.ink}"
     typography: "{typography.progress}"
   completion:
     textColor: "{colors.accent}"
-    typography: "{typography.caption}"
+    typography: "{typography.progress}"
   retry-button:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.quiet}"
@@ -61,13 +41,13 @@ components:
 **Creative North Star: "The Travel Sketchbook"**
 
 Detailed graphite streetscapes on textured ivory paper carry the experience.
-Small, restrained controls leave the portrait artwork dominant, while muted green acknowledges progress and keyboard focus.
+An unboxed counter leaves the portrait artwork dominant, while muted green acknowledges completion and keyboard focus.
 
 **Key Characteristics:**
 
 - Portrait travel illustrations with cats integrated into the architecture.
 - Warm paper, graphite text, and a restrained botanical accent.
-- A small location heading, counter, zoom cluster, and caption.
+- A small cat icon and counter directly over the artwork, with no surrounding game chrome.
 
 ## Colors
 
@@ -81,38 +61,36 @@ The palette extends the warmth and low saturation of the pencil artwork.
 
 - **Ivory Paper** (`paper`) surrounds the artwork and backs retry controls.
 - **Graphite Ink** (`ink`) carries headings, counters, and controls.
-- **Warm Pencil** (`quiet`) softens the game name, instructions, and loading messages.
-- **Pale Paper** (`control`) lifts the zoom cluster slightly above the image.
-- **Pressed Paper** (`control-hover`) gives enabled zoom buttons their hover state.
+- **Warm Pencil** (`quiet`) softens loading messages and retry actions.
+- **Pale Paper** (`control`) backs development editor fields and controls.
 
 ## Typography
 
-Self-hosted Lora, with Georgia and serif fallbacks, gives the location heading its bookish character.
+Self-hosted Lora, with Georgia and serif fallbacks, gives loading messages and the editor heading their bookish character.
 Self-hosted DM Sans, with a sans-serif fallback, keeps controls and counters compact.
-The location title uses the title token; the adjacent game name is italic Lora at (15px), with normal letter spacing.
-Progress uses tabular numerals, and the footer uses the caption token.
-At the phone breakpoint, the title becomes (22px), game name (14px), progress (13px), and caption (10px).
+Progress uses tabular numerals and the progress token.
+At the phone breakpoint, progress becomes (13px).
 
 ## Layout
 
 The centered game column has a portrait image ratio of (2:3).
-Desktop width is the minimum of viewport width minus (48px), viewport height minus (124px) converted to the image ratio, and (760px).
-The desktop header is (70px) high and footer reserves at least (54px).
-At widths up to (600px), the column uses the minimum of full width and viewport height minus (110px) converted to the image ratio, with a (62px) header and (48px) footer.
-Phone text has (16px) horizontal padding while the image can reach the column edges.
-At widths up to (340px), the adjacent game name and extended instruction disappear.
-Short landscape viewports up to (500px) high use a maximum column width of (500px), with (32px) total horizontal clearance.
+Its width is the minimum of the full viewport width and the small viewport height converted to the image ratio.
+The artwork reaches the top of the viewport and fills the limiting dimension without cropping cats or stretching the drawing.
+No height is reserved for a heading, footer, or zoom controls.
+The counter sits inside the top-right image corner, inset by (16px) or the relevant device safe area, whichever is larger.
+Phones and short landscape screens use the same proportional fit.
 
 ## Elevation & Depth
 
-Two low-contrast shadows distinguish physical paper from floating controls.
-The picture uses `0 7px 32px #58462d0c`; the zoom cluster uses `0 3px 15px #32271220`.
+One low-contrast shadow distinguishes physical paper from the surrounding page.
+The picture uses `0 7px 32px #58462d0c`.
+The counter has no background, border, shadow, or container decoration.
 The artwork itself supplies most depth and texture.
 
 ## Shapes
 
 The portrait artwork retains square edges.
-Only the compact zoom cluster and its buttons use the gently curved radius tokens.
+Retry and editor controls also keep square edges.
 Cat tap polygons and reveal polygons remain independent, so forgiving targets do not lighten the surrounding scene.
 
 ## Components
@@ -126,18 +104,15 @@ Reduced-motion preferences remove this animation.
 ### Progress and completion
 
 A small outline cat icon accompanies a tabular found-count fraction.
-Completion turns the counter and footer botanical green, presents an underlined next-picture action, and advances automatically after (2200ms).
-
-### Zoom controls
-
-A pale paper cluster sits at the lower-right image corner, inset by (12px) on desktop and (10px) on phones.
-Buttons are at least (40px) wide and (42px) high on desktop, increasing to (44px) square on phones.
-Disabled controls use (0.35) opacity; focus uses a (2px) accent outline with (4px) offset.
+The overlay lets pointer input pass through to the illustration.
+Completion turns the counter botanical green and advances automatically after (2200ms).
+Pinch and keyboard zoom remain available without visible zoom buttons.
 
 ### Loading and retry
 
 Centered italic Lora text sits above the picture while it opens.
 An image failure exposes a square, quiet-bordered retry button using the paper background.
+Keyboard focus uses a (2px) accent outline with (4px) offset on controls and (5px) offset around the picture.
 
 ## Do's and Don'ts
 
@@ -152,4 +127,5 @@ An image failure exposes a square, quiet-bordered retry button using the paper b
 
 - **Don't** surround the game with a landing page, navigation, account flow, or dashboard.
 - **Don't** add decorative containers that compete with the artwork.
+- **Don't** add a location heading, footer instructions, or visible zoom controls to the game.
 - **Don't** turn cat feedback into a bright fill over the surrounding scene.

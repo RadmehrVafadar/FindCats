@@ -1,14 +1,19 @@
 # Find the Cats
 
-A quiet picture-first game about finding six cats in pencil drawings of Paris, Venice, and Kyoto.
+A quiet hidden-cat game in a travel sketchbook, drawn in graphite on warm ivory paper.
+
+![Find the Cats: five places, thirty cats, take your time.](docs/images/cover.svg)
+
+![Paris fills the available height, with a small cat counter directly over the drawing.](docs/images/gameplay.png)
 
 ## Features
 
-- Cats gently lighten when found.
-- The next picture loads automatically after all six are found.
-- Pinch, drag, or use the zoom buttons to explore.
-- Scenes shuffle without repeating, including on refresh.
-- A development-only editor traces tap regions and reveal outlines.
+- Five places to explore: Paris, Venice, Kyoto, Lisbon, and Istanbul.
+- Six cats in every drawing, with a gentle pencil-lightening reveal.
+- Just the illustration and a small cat counter, with the whole picture kept in view.
+- Pinch and drag to look closer, or use the keyboard.
+- Find all six to travel onward; pictures shuffle without repeating, including on refresh.
+- A development-only editor for tracing cat outlines and forgiving tap regions.
 
 ## Quick start
 
@@ -20,21 +25,20 @@ npm run dev
 ```
 
 Open the local URL printed by Vite.
-The editor is at `/editor` during development and is excluded from production builds.
+The polygon editor lives at `/editor` during development.
+Build with `npm run build`, then serve `dist/` as a static site.
+Fonts and artwork are bundled locally; playing needs no account, API key, or backend.
 
-```bash
-npm run lint
-npm test
-npx playwright install chromium
-npm run test:e2e
-npm run build
-npm run preview
-```
+## A closer look
 
-The static production site is written to `dist/`.
-No account, API key, backend, or runtime network service is required.
+Tap or click a cat to find it.
+On a touch screen, pinch to zoom and drag to explore.
+With the picture focused, use `+` / `-` to zoom, arrow keys to pan, and `0` to reset.
+
+Run `npm run lint` and `npm test` for code and geometry checks.
+Install Chromium with `npx playwright install chromium`, then run `npm run test:e2e` for desktop and phone gameplay checks.
 
 ## Docs
 
 - [Gameplay and artwork](docs/gameplay.md) - scene data, interaction, storage, and adding illustrations.
-- [Design system](DESIGN.md) - the minimal picture-first interface.
+- [Design system](DESIGN.md) - ivory paper, graphite, botanical green, and an interface that stays out of the picture.
