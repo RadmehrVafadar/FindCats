@@ -3,11 +3,19 @@ import type { Page } from '@playwright/test'
 import { puzzles } from '../src/puzzles'
 
 const parisSpots = [[205, 1165], [914, 980], [235, 605], [807, 728], [240, 289], [942, 216]]
+// Read from the finished artwork, independently of the target polygons.
+const sceneSpots: Record<string, number[][]> = {
+  paris: parisSpots,
+  venice: [[145, 1260], [900, 1325], [164, 463], [500, 750], [868, 360], [220, 100]],
+  kyoto: [[190, 1390], [850, 1325], [204, 807], [850, 690], [130, 305], [924, 320]],
+  lisbon: [[200, 1170], [901, 1349], [171, 727], [860, 615], [222, 199], [870, 267]],
+  istanbul: [[193, 1390], [906, 1237], [146, 616], [835, 890], [204, 178], [899, 239]],
+}
 
 async function open(page: Page) {
   await page.goto('/')
   await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
-  await expect(page.getByRole('heading')).toContainText('Paris')
+  await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toBeVisible()
 }
 
 async function clickArtwork(page: Page, x: number, y: number) {
@@ -30,16 +38,17 @@ test('actual artwork taps reveal cats once and automatically open the next scene
   await expect(page.getByRole('button', { name: 'Cat 1', exact: true })).toHaveAttribute('aria-pressed', 'true')
   for (const [x, y] of parisSpots.slice(1)) await clickArtwork(page, x, y)
   await expect(page.getByLabel('6 of 6 cats found')).toBeVisible()
-  await expect(page.getByText('All six found. Bon voyage!')).toBeVisible()
-  await expect(page.getByRole('heading')).not.toContainText('Paris', { timeout: 5000 })
+  await expect(page.locator('.progress')).toHaveClass('progress complete')
+  await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toHaveCount(0, { timeout: 5000 })
   await expect(page.getByLabel('0 of 6 cats found')).toBeVisible()
   expect(errors).toEqual([])
 })
 
 test('zoom and drag leave targets aligned and do not select a cat while panning', async ({ page }) => {
   await open(page)
-  await page.getByRole('button', { name: 'Zoom in', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'Reset zoom' })).toContainText('150')
+  const art = page.getByRole('group', { name: /hidden cat illustration/ })
+  await art.press('+')
+  await expect(art).toHaveAttribute('viewBox', /682\.666/)
   const box = (await page.getByRole('group', { name: /hidden cat illustration/ }).boundingBox())!
   // Drag over the foreground cat, then release away from the initial press.
   const startX = box.x + (205 - 1024 / 6) / (1024 / 1.5) * box.width
@@ -49,8 +58,9 @@ test('zoom and drag leave targets aligned and do not select a cat while panning'
   await page.mouse.move(startX + 60, startY - 90, { steps: 8 })
   await page.mouse.up()
   await expect(page.getByLabel('0 of 6 cats found')).toBeVisible()
-  await page.getByRole('button', { name: 'Reset zoom' }).click()
-  await page.getByRole('button', { name: 'Zoom in', exact: true }).click()
+  await art.press('0')
+  await expect(art).toHaveAttribute('viewBox', '0 0 1024 1536')
+  await art.press('+')
   await clickArtwork(page, 807, 728)
   await expect(page.getByLabel('1 of 6 cats found')).toBeVisible()
 })
@@ -60,27 +70,29 @@ test('refresh advances without repeating before the full collection is exhausted
   await clickArtwork(page, 205, 1165)
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('find-the-cats:v1')!))
   expect(stored.found.paris).toEqual(['wall'])
-  const scenes = ['Paris']
-  for (let i = 0; i < 2; i++) {
+  expect(new Set([stored.current, ...stored.remaining])).toEqual(new Set(puzzles.map(puzzle => puzzle.id)))
+  const scenes = ['Paris hidden cat illustration']
+  for (let i = 1; i < puzzles.length; i++) {
     await page.reload()
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
-    scenes.push((await page.getByRole('heading').innerText()).split('/')[0].trim())
+    scenes.push((await page.getByRole('group', { name: /hidden cat illustration/ }).getAttribute('aria-label'))!)
   }
-  expect(new Set(scenes).size).toBe(3)
+  expect(new Set(scenes).size).toBe(puzzles.length)
   await page.reload()
-  await expect(page.getByRole('heading')).not.toContainText(scenes[2])
+  await expect(page.getByRole('group', { name: scenes.at(-1), exact: true })).toHaveCount(0)
 })
 
 test('every location accepts all six real cat coordinates', async ({ page }, info) => {
+  await page.goto('/')
   for (const puzzle of puzzles) {
-    await page.addInitScript(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
-    await page.goto('/')
+    await page.evaluate(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
+    await page.reload()
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
-    await expect(page.getByRole('heading')).toContainText(puzzle.location)
-    for (const cat of puzzle.cats) {
-      const x = cat.reveal.reduce((sum, p) => sum + p[0], 0) / cat.reveal.length
-      const y = cat.reveal.reduce((sum, p) => sum + p[1], 0) / cat.reveal.length
+    await expect(page.getByRole('group', { name: `${puzzle.location} hidden cat illustration` })).toBeVisible()
+    expect(sceneSpots[puzzle.id]).toHaveLength(6)
+    for (const [index, [x, y]] of sceneSpots[puzzle.id].entries()) {
       await clickArtwork(page, x, y)
+      await expect(page.getByRole('button', { name: `Cat ${index + 1}`, exact: true }), `${puzzle.location} cat ${index + 1}`).toHaveAttribute('aria-pressed', 'true')
     }
     await expect(page.getByLabel('6 of 6 cats found')).toBeVisible()
     await page.locator('.cat-reveal').evaluateAll(elements => Promise.all(elements.flatMap(element => element.getAnimations().map(animation => animation.finished))))
@@ -95,7 +107,7 @@ test('keyboard access finds cats, and storage failure does not prevent play', as
   await page.getByRole('button', { name: 'Cat 1', exact: true }).press('Space')
   await expect(page.getByLabel('1 of 6 cats found')).toBeVisible()
   await page.getByRole('group', { name: /hidden cat illustration/ }).press('+')
-  await expect(page.getByRole('button', { name: 'Reset zoom' })).toContainText('150')
+  await expect(page.getByRole('group', { name: /hidden cat illustration/ })).toHaveAttribute('viewBox', /682\.666/)
 })
 
 test('two-finger pinch zooms without finding cats, followed by a real touch tap', async ({ page, context }) => {
@@ -107,9 +119,10 @@ test('two-finger pinch zooms without finding cats, followed by a real touch tap'
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x - 35, y, id: 0 }, { x: x + 35, y, id: 1 }] })
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 70, y, id: 0 }, { x: x + 70, y, id: 1 }] })
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
-  await expect(page.getByRole('button', { name: 'Reset zoom' })).not.toContainText('100')
+  const art = page.getByRole('group', { name: /hidden cat illustration/ })
+  await expect(art).not.toHaveAttribute('viewBox', '0 0 1024 1536')
   await expect(page.getByLabel('0 of 6 cats found')).toBeVisible()
-  await page.getByRole('button', { name: 'Reset zoom' }).click()
+  await art.press('0')
   const catX = box.x + 205 / 1024 * box.width, catY = box.y + 1165 / 1536 * box.height
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: catX, y: catY, id: 0 }] })
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
@@ -120,7 +133,7 @@ test('two-finger pinch zooms without finding cats, followed by a real touch tap'
 test('the minimal page fits the viewport and supplies a visual review capture', async ({ page }, info) => {
   await open(page)
   await page.evaluate(() => document.fonts.ready)
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth && document.documentElement.scrollHeight <= window.innerHeight)).toBe(true)
   await expect(page.getByRole('group', { name: /hidden cat illustration/ })).toBeInViewport({ ratio: 1 })
   await page.screenshot({ path: `.impeccable/review/${info.project.name}.png`, fullPage: true })
   await clickArtwork(page, 205, 1165)
@@ -129,6 +142,41 @@ test('the minimal page fits the viewport and supplies a visual review capture', 
   if (info.project.name === 'desktop') {
     await page.setViewportSize({ width: 406, height: 884 })
     await page.screenshot({ path: '.impeccable/review/user-406.png', fullPage: true })
+  }
+})
+
+test('only the unboxed cat counter overlays the largest uncropped picture', async ({ page }) => {
+  await open(page)
+  await expect(page.getByRole('heading')).toHaveCount(0)
+  await expect(page.getByText('Find six little locals.', { exact: false })).toBeHidden()
+  await expect(page.getByRole('button', { name: /zoom/i })).toHaveCount(0)
+  await expect(page.locator('header, footer')).toHaveCount(0)
+  const picture = (await page.locator('.picture').boundingBox())!
+  const counter = (await page.getByLabel('0 of 6 cats found').boundingBox())!
+  const viewport = page.viewportSize()!
+  expect(picture.width).toBeCloseTo(Math.min(viewport.width, viewport.height * 2 / 3), 0)
+  expect(picture.height / picture.width).toBeCloseTo(1.5)
+  expect(counter.x).toBeGreaterThan(picture.x + picture.width / 2)
+  expect(counter.x + counter.width).toBeLessThan(picture.x + picture.width)
+  expect(counter.y).toBeGreaterThan(picture.y)
+  expect(counter.y + counter.height).toBeLessThan(picture.y + picture.height)
+  const decoration = await page.locator('.progress').evaluate(element => {
+    const style = getComputedStyle(element)
+    return { background: style.backgroundColor, shadow: style.boxShadow, pointerEvents: style.pointerEvents }
+  })
+  expect(decoration).toEqual({ background: 'rgba(0, 0, 0, 0)', shadow: 'none', pointerEvents: 'none' })
+})
+
+test('the full picture stays usable on narrow and short landscape screens', async ({ page }, info) => {
+  await open(page)
+  for (const size of [{ width: 320, height: 568 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(size)
+    const picture = (await page.locator('.picture').boundingBox())!
+    expect(picture.width).toBeCloseTo(Math.min(size.width, size.height * 2 / 3), 0)
+    expect(picture.height).toBeLessThanOrEqual(size.height)
+    await expect(page.locator('.picture')).toBeInViewport({ ratio: 1 })
+    await expect(page.getByLabel('0 of 6 cats found')).toBeInViewport({ ratio: 1 })
+    await page.screenshot({ path: `.impeccable/review/${info.project.name}-${size.width}.png`, fullPage: true })
   }
 })
 

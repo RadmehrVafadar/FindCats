@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-07T04:40:38.320Z",
+  "generatedAt": "2026-11-07T14:30:10.647Z",
   "title": "Design System: Find the Cats",
   "extensions": {
     "colorMeta": {
@@ -73,34 +73,16 @@
           "oklch(83.57% 0.0110 89.72)",
           "oklch(95% 0.0110 89.72)"
         ]
-      },
-      "control-hover": {
-        "role": "neutral",
-        "displayName": "Pressed Paper",
-        "tonalRamp": [
-          "oklch(15% 0.0179 92.69)",
-          "oklch(26.43% 0.0179 92.69)",
-          "oklch(37.86% 0.0179 92.69)",
-          "oklch(49.29% 0.0179 92.69)",
-          "oklch(60.71% 0.0179 92.69)",
-          "oklch(72.14% 0.0179 92.69)",
-          "oklch(83.57% 0.0179 92.69)",
-          "oklch(95% 0.0179 92.69)"
-        ]
       }
     },
     "typographyMeta": {
       "title": {
-        "displayName": "Location Title",
-        "purpose": "Lora location heading."
+        "displayName": "Editor Title",
+        "purpose": "Lora development editor heading."
       },
       "progress": {
         "displayName": "Found Count",
         "purpose": "Compact DM Sans counter with tabular numerals."
-      },
-      "caption": {
-        "displayName": "Quiet Caption",
-        "purpose": "Instructions and completion footer."
       }
     },
     "shadows": [
@@ -108,11 +90,6 @@
         "name": "picture-paper",
         "value": "0 7px 32px #58462d0c",
         "purpose": "Soft paper shadow beneath the portrait artwork."
-      },
-      {
-        "name": "zoom-controls",
-        "value": "0 3px 15px #32271220",
-        "purpose": "Lift the zoom cluster above the image."
       }
     ],
     "motion": [
@@ -131,41 +108,17 @@
       {
         "name": "phone",
         "value": "600px"
-      },
-      {
-        "name": "narrow-phone",
-        "value": "340px"
-      },
-      {
-        "name": "short-landscape-height",
-        "value": "500px"
       }
     ]
   },
   "components": [
     {
-      "name": "Zoom Controls",
-      "kind": "button",
-      "refersTo": "zoom-controls",
-      "description": "Compact image-overlay zoom controls and percentage reset.",
-      "html": "<div class=\"ds-zoom\" aria-label=\"Picture zoom\"><button aria-label=\"Zoom out\" disabled>−</button><button class=\"ds-reset\" aria-label=\"Reset zoom\">100<span>%</span></button><button aria-label=\"Zoom in\">+</button></div>",
-      "css": ".ds-zoom{display:inline-flex;align-items:center;background:#faf7ef;color:var(--ink,#484738);border-radius:6px;box-shadow:0 3px 15px #32271220;font-family:'DM Sans',sans-serif}.ds-zoom button{display:grid;place-items:center;border:0;background:transparent;color:inherit;cursor:pointer;min-width:40px;min-height:42px;padding:0 10px;font:22px 'DM Sans',sans-serif;border-radius:4px}.ds-zoom button:hover:not(:disabled){background:#e9e5d8}.ds-zoom button:disabled{opacity:.35;cursor:default}.ds-zoom .ds-reset{display:flex;align-items:center;justify-content:center;min-width:56px;gap:2px;font-size:11px;font-variant-numeric:tabular-nums}.ds-reset span{font-size:9px}.ds-zoom button:focus-visible{outline:2px solid var(--accent,#53634e);outline-offset:4px;}@media(max-width:600px){.ds-zoom button{min-width:44px;min-height:44px}}"
-    },
-    {
       "name": "Found Counter",
       "kind": "custom",
       "refersTo": "progress",
-      "description": "Quiet cat outline with tabular progress.",
+      "description": "Unboxed cat outline and tabular count over the top-right of the illustration; pointer input passes through.",
       "html": "<div class=\"ds-progress\" role=\"status\" aria-label=\"2 of 6 cats found\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.35\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 11 4 3l6 4a10 10 0 0 1 4 0l6-4-.5 8c1 1.3 1.5 2.5 1.5 4 0 4-4 6-9 6s-9-2-9-6c0-1.5.5-2.7 1.5-4Z\"/><path d=\"M8 13h.01M16 13h.01M11 16h2l-1 1-1-1ZM2 14l4 1M2 18l4-1M22 14l-4 1M22 18l-4-1\"/></svg><span>2<span class=\"ds-divider\"> / </span>6</span></div>",
-      "css": ".ds-progress{display:flex;align-items:center;gap:9px;color:var(--ink,#484738);font:14px 'DM Sans',sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-progress svg{width:22px;height:22px}.ds-divider{color:#8c8473}@media(max-width:600px){.ds-progress{gap:6px;font-size:13px}.ds-progress svg{width:20px;height:20px}}"
-    },
-    {
-      "name": "Completion Footer",
-      "kind": "button",
-      "refersTo": "completion",
-      "description": "Botanical completion message and quiet next-picture action.",
-      "html": "<div class=\"ds-completion\" role=\"status\"><span>All six found. Bon voyage!</span><button>Next picture <span aria-hidden=\"true\">↗</span></button></div>",
-      "css": ".ds-completion{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--accent,#53634e);font:11px/1.5 'DM Sans',sans-serif}.ds-completion button{border:0;padding:0;background:transparent;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:4px}.ds-completion button:focus-visible{outline:2px solid var(--accent,#53634e);outline-offset:4px}@media(max-width:600px){.ds-completion{font-size:10px}}"
+      "css": ".ds-progress{display:flex;align-items:center;gap:9px;color:var(--ink,#484738);font:14px 'DM Sans',sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}.ds-progress svg{width:22px;height:22px}.ds-divider{color:#8c8473}@media(max-width:600px){.ds-progress{gap:6px;font-size:13px}.ds-progress svg{width:20px;height:20px}}"
     },
     {
       "name": "Retry Button",
@@ -185,11 +138,11 @@
   ],
   "narrative": {
     "northStar": "The Travel Sketchbook",
-    "overview": "Detailed graphite streetscapes on textured ivory paper carry the experience.\nSmall, restrained controls leave the portrait artwork dominant, while muted green acknowledges progress and keyboard focus.",
+    "overview": "Detailed graphite streetscapes on textured ivory paper carry the experience.\r\nAn unboxed counter leaves the portrait artwork dominant, while muted green acknowledges completion and keyboard focus.",
     "keyCharacteristics": [
       "Portrait travel illustrations with cats integrated into the architecture.",
       "Warm paper, graphite text, and a restrained botanical accent.",
-      "A small location heading, counter, zoom cluster, and caption."
+      "A small cat icon and counter directly over the artwork, with no surrounding game chrome."
     ],
     "rules": [],
     "dos": [
@@ -201,7 +154,8 @@
     "donts": [
       "**Don't** surround the game with a landing page, navigation, account flow, or dashboard.",
       "**Don't** add decorative containers that compete with the artwork.",
-      "**Don't** turn cat feedback into a bright fill over the surrounding scene."
+      "**Don't** turn cat feedback into a bright fill over the surrounding scene.",
+      "**Don't** add a location heading, footer instructions, or visible zoom controls to the game."
     ]
   }
 }

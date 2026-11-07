@@ -12,7 +12,6 @@ export default function Picture({ puzzle, found, onFind }: Props) {
   const [camera, setCamera] = useState<Camera>(HOME)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
-  const svg = useRef<SVGSVGElement>(null)
   const touches = useRef(new Map<number, Touch>())
   const gesture = useRef({ x: 0, y: 0, moved: false, multi: false })
   const { width, height } = puzzle
@@ -78,10 +77,11 @@ export default function Picture({ puzzle, found, onFind }: Props) {
   }
 
   return <div className="picture-wrap">
-    <svg ref={svg} className={`picture ${camera.zoom > 1 ? 'is-zoomed' : ''}`} viewBox={`${camera.x} ${camera.y} ${width / camera.zoom} ${height / camera.zoom}`} width={width} height={height}
+    <svg className={`picture ${camera.zoom > 1 ? 'is-zoomed' : ''}`} viewBox={`${camera.x} ${camera.y} ${width / camera.zoom} ${height / camera.zoom}`} width={width} height={height}
       role="group" aria-label={`${puzzle.location} hidden cat illustration`} aria-describedby="picture-help" tabIndex={0}
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onKeyDown={key}
       onLostPointerCapture={event => touches.current.delete(event.pointerId)}>
+      <desc id="picture-help">Find six cats. Pinch to zoom, then drag to explore. With the picture focused, use plus or minus to zoom, arrow keys to pan, and zero to reset.</desc>
       <defs>
         <filter id="found-tint" colorInterpolationFilters="sRGB">
           <feComponentTransfer>
@@ -105,10 +105,5 @@ export default function Picture({ puzzle, found, onFind }: Props) {
       </g>)}
     </svg>
     {!loaded && <div className="picture-message" role="status">{failed ? <><span>The picture couldn’t load.</span><button onClick={() => window.location.reload()}>Try again</button></> : 'Opening your sketchbook…'}</div>}
-    <div className="zoom-controls" aria-label="Picture zoom">
-      <button aria-label="Zoom out" disabled={camera.zoom <= 1} onClick={() => zoom(1 / 1.5)}><span aria-hidden="true">−</span></button>
-      <button className="zoom-reset" aria-label="Reset zoom" onClick={() => setCamera(HOME)}>{Math.round(camera.zoom * 100)}<span>%</span></button>
-      <button aria-label="Zoom in" disabled={camera.zoom >= 4} onClick={() => zoom(1.5)}><span aria-hidden="true">+</span></button>
-    </div>
   </div>
 }

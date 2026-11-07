@@ -8,7 +8,7 @@ function start(): Session {
   let previous: Session | null = null
   try { previous = readSession(localStorage.getItem(STORAGE_KEY), puzzles) } catch { /* Private browsing can disable storage. */ }
   return previous ? nextScene(previous, puzzles.map(p => p.id)) : {
-    current: 'paris', remaining: shuffle(['venice', 'kyoto']), found: { paris: [] },
+    current: 'paris', remaining: shuffle(puzzles.filter(p => p.id !== 'paris').map(p => p.id)), found: { paris: [] },
   }
 }
 
@@ -38,17 +38,10 @@ export default function App() {
     return () => window.clearTimeout(timer)
   }, [complete, advance])
 
-  return <main className="game">
-    <header className="game-header">
-      <h1>{puzzle.location}<span className="location-divider" aria-hidden="true"> / </span><span className="game-name">find the cats</span></h1>
-      <div className={`progress ${complete ? 'complete' : ''}`} role="status" aria-live="polite" aria-label={`${found.length} of ${puzzle.cats.length} cats found`}>
-        <CatIcon /><span>{found.length}<span className="count-divider"> / </span>{puzzle.cats.length}</span>
-      </div>
-    </header>
+  return <main className="game" aria-label={`Find the cats in ${puzzle.location}`}>
     <Picture key={puzzle.id} puzzle={puzzle} found={found} onFind={id => setSession(previous => findCat(previous, puzzle, id))} />
-    <footer className="game-footer">
-      {complete ? <div className="completion" role="status"><span>All six found. Bon voyage!</span><button onClick={advance}>Next picture <span aria-hidden="true">↗</span></button></div>
-        : <p id="picture-help">Find six little locals.<span> Tap a cat. Pinch to look closer.</span></p>}
-    </footer>
+    <div className={`progress ${complete ? 'complete' : ''}`} role="status" aria-live="polite" aria-label={`${found.length} of ${puzzle.cats.length} cats found`}>
+      <CatIcon /><span>{found.length}<span className="count-divider"> / </span>{puzzle.cats.length}</span>
+    </div>
   </main>
 }
