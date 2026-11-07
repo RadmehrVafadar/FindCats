@@ -7,6 +7,8 @@ colors:
   quiet: "#716c5e"
   accent: "#53634e"
   control: "#faf7ef"
+  counter-dark: "#000000"
+  counter-light: "#ffffff"
 typography:
   title:
     fontFamily: "Lora, Georgia, serif"
@@ -23,10 +25,10 @@ spacing:
   wide: "24px"
 components:
   progress:
-    textColor: "{colors.ink}"
+    textColor: "{colors.counter-dark}"
     typography: "{typography.progress}"
-  completion:
-    textColor: "{colors.accent}"
+  progress-light:
+    textColor: "{colors.counter-light}"
     typography: "{typography.progress}"
   retry-button:
     backgroundColor: "{colors.paper}"
@@ -41,7 +43,7 @@ components:
 **Creative North Star: "The Travel Sketchbook"**
 
 Detailed graphite streetscapes on textured ivory paper carry the experience.
-An unboxed counter leaves the portrait artwork dominant, while muted green acknowledges completion and keyboard focus.
+An unboxed counter leaves the portrait artwork dominant, while muted green identifies keyboard focus and authoring controls.
 
 **Key Characteristics:**
 
@@ -55,7 +57,7 @@ The palette extends the warmth and low saturation of the pencil artwork.
 
 ### Primary
 
-- **Botanical Green** (`accent`) identifies completion, focus outlines, and editor accents.
+- **Botanical Green** (`accent`) identifies focus outlines and editor accents.
 
 ### Neutral
 
@@ -63,6 +65,7 @@ The palette extends the warmth and low saturation of the pencil artwork.
 - **Graphite Ink** (`ink`) carries headings, counters, and controls.
 - **Warm Pencil** (`quiet`) softens loading messages and retry actions.
 - **Pale Paper** (`control`) backs development editor fields and controls.
+- **Counter Dark** and **Counter Light** switch the counter between black and white to suit the artwork beneath it.
 
 ## Typography
 
@@ -85,6 +88,7 @@ Phones and short landscape screens use the same proportional fit.
 One low-contrast shadow distinguishes physical paper from the surrounding page.
 The picture uses `0 7px 32px #58462d0c`.
 The counter has no background, border, shadow, or container decoration.
+Only the lettering and cat outline receive a thin opposite-color edge to stay legible over detailed hatching.
 The artwork itself supplies most depth and texture.
 
 ## Shapes
@@ -105,7 +109,10 @@ Reduced-motion preferences remove this animation.
 
 A small outline cat icon accompanies a tabular found-count fraction.
 The overlay lets pointer input pass through to the illustration.
-Completion turns the counter botanical green and advances automatically after (2200ms).
+The counter samples the image beneath its current position and selects the higher-contrast black or white ink.
+It updates during zooming, panning, loading, and resizing, with a (1px) opposite-color edge on the lettering and cat icon.
+The slash uses the same ink as the count.
+Completion keeps the adaptive ink, shows six of six, and advances automatically after (2200ms).
 Pinch and keyboard zoom remain available without visible zoom buttons.
 
 ### Loading and retry

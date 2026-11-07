@@ -10,9 +10,13 @@ Each cat needs a forgiving touch area and an independent silhouette for its ligh
 ## How it works
 
 `App.tsx` owns the scene queue and found cat IDs.
-A new browser starts in Paris, with Venice, Kyoto, Lisbon, and Istanbul shuffled behind it.
-Completing a scene turns the counter botanical green and advances automatically after 2.2 seconds.
+A new browser starts in Paris, with the other nine locations shuffled behind it.
+The collection includes Venice, Kyoto, Lisbon, Istanbul, Amsterdam, Prague, Chefchaouen, Havana, and Seoul.
+Completing a scene shows six of six and advances automatically after 2.2 seconds.
 The unboxed cat icon and counter sit over the top-right of the illustration and let taps pass through to the artwork.
+The counter samples a small patch of the underlying image, mapped through the current SVG viewBox, and chooses black or white ink for higher luminance contrast.
+Camera changes, image loading, and resizing schedule at most one sample per animation frame.
+Thin opposite-color edges keep the icon and fraction readable across pencil strokes and mixed light and dark details.
 The picture uses the largest uncropped 2:3 rectangle that fits the viewport, with no space reserved for a header, footer, or zoom controls.
 Refreshing also advances to the next queued scene.
 Every available scene appears before the collection reshuffles, with no immediate repeat at a collection boundary.
@@ -47,6 +51,7 @@ Fonts and illustrations are served locally.
 - `src/game.ts` - queue, validation, hit testing, and camera math.
 - `src/App.tsx` - progress and automatic scene transitions.
 - `src/Picture.tsx` - artwork, reveal filter, and input handling.
+- `src/Progress.tsx` - unboxed progress and adaptive background contrast.
 - `src/Editor.tsx` - development-only polygon tracing and JSON export.
 - `public/art/` - finished images and their exact generation prompts.
 - `public/fonts/` - bundled Lora and DM Sans fonts and licenses.
@@ -59,14 +64,14 @@ Open `/editor` using the development server.
 Choose an existing illustration or upload PNG, JPEG, or WebP artwork.
 Enter its ID and location, add a cat, and trace at least three points around each region.
 Save the precise reveal outline and the forgiving tap region separately.
-The built-in walking cats in Lisbon and Istanbul use explicit tap regions that bridge narrow gaps between legs while their reveal outlines follow the silhouettes.
+Some cats use explicit tap regions to bridge narrow legs or a long tail while their reveal outlines follow the silhouettes.
 Preview the puzzle to test the targets, then export JSON.
 The editor keeps changes in memory until export; reloading discards unexported work.
 Copy uploaded artwork into `public/art/` using its original filename and add the exported record to `src/puzzles.ts`.
 Replace artwork before tracing targets because image edits can move the cats.
 Review every cat for recognizable anatomy, fair visibility, and accidental extra cats.
 
-The built-in image generation tool produced all five illustrations.
+The built-in image generation tool produced all ten illustrations.
 Exact prompts are stored in sibling `.prompt.txt` files.
 The current artwork uses full-resolution PNGs, approximately 4.3 MB per scene.
 Automated phone checks use Chromium device emulation; physical-phone playtesting and difficulty feedback are still needed.

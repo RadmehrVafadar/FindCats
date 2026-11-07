@@ -10,6 +10,11 @@ const sceneSpots: Record<string, number[][]> = {
   kyoto: [[190, 1390], [850, 1325], [204, 807], [850, 690], [130, 305], [924, 320]],
   lisbon: [[200, 1170], [901, 1349], [171, 727], [860, 615], [222, 199], [870, 267]],
   istanbul: [[193, 1390], [906, 1237], [146, 616], [835, 890], [204, 178], [899, 239]],
+  amsterdam: [[154, 1300], [890, 1268], [291, 615], [801, 773], [255, 247], [912, 155]],
+  prague: [[835, 1345], [127, 1220], [950, 785], [300, 655], [187, 202], [912, 236]],
+  chefchaouen: [[207, 1365], [755, 1220], [232, 847], [808, 496], [245, 207], [909, 230]],
+  havana: [[901, 1305], [157, 1470], [900, 517], [270, 478], [145, 113], [925, 138]],
+  seoul: [[182, 1340], [864, 1077], [255, 974], [773, 940], [198, 321], [884, 351]],
 }
 
 async function open(page: Page) {
@@ -82,13 +87,13 @@ test('refresh advances without repeating before the full collection is exhausted
   await expect(page.getByRole('group', { name: scenes.at(-1), exact: true })).toHaveCount(0)
 })
 
-test('every location accepts all six real cat coordinates', async ({ page }, info) => {
-  await page.goto('/')
-  for (const puzzle of puzzles) {
-    await page.evaluate(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
-    await page.reload()
+for (const puzzle of puzzles) {
+  test(`${puzzle.location} accepts all six real cat coordinates`, async ({ page }, info) => {
+    await page.addInitScript(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
+    await page.goto('/')
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
     await expect(page.getByRole('group', { name: `${puzzle.location} hidden cat illustration` })).toBeVisible()
+    if (puzzle.id === 'seoul') await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(255, 255, 255)')
     expect(sceneSpots[puzzle.id]).toHaveLength(6)
     for (const [index, [x, y]] of sceneSpots[puzzle.id].entries()) {
       await clickArtwork(page, x, y)
@@ -97,8 +102,8 @@ test('every location accepts all six real cat coordinates', async ({ page }, inf
     await expect(page.getByLabel('6 of 6 cats found')).toBeVisible()
     await page.locator('.cat-reveal').evaluateAll(elements => Promise.all(elements.flatMap(element => element.getAnimations().map(animation => animation.finished))))
     await page.screenshot({ path: `.impeccable/review/${info.project.name}-${puzzle.id}-complete.png`, fullPage: true })
-  }
-})
+  })
+}
 
 test('keyboard access finds cats, and storage failure does not prevent play', async ({ page }) => {
   await page.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('Storage disabled') } })
@@ -165,6 +170,37 @@ test('only the unboxed cat counter overlays the largest uncropped picture', asyn
     return { background: style.backgroundColor, shadow: style.boxShadow, pointerEvents: style.pointerEvents }
   })
   expect(decoration).toEqual({ background: 'rgba(0, 0, 0, 0)', shadow: 'none', pointerEvents: 'none' })
+})
+
+test('the counter switches ink for dark, light, and midtone artwork', async ({ page }, info) => {
+  await page.addInitScript(() => localStorage.clear())
+  for (const [background, foreground] of [['#111111', 'rgb(255, 255, 255)'], ['#ffffff', 'rgb(0, 0, 0)'], ['#777777', 'rgb(0, 0, 0)']]) {
+    await page.route('**/art/paris.png', route => route.fulfill({ contentType: 'image/svg+xml', body: `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><path fill="${background}" d="M0 0h1024v1536H0z"/></svg>` }))
+    await open(page)
+    const counter = page.getByLabel('0 of 6 cats found')
+    await expect(counter).toHaveCSS('color', foreground)
+    await expect(counter.locator('.count-divider')).toHaveCSS('color', foreground)
+    await expect(counter.locator('svg')).toHaveCSS('color', foreground)
+    await expect(counter).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    await page.screenshot({ path: `.impeccable/review/${info.project.name}-counter-${background.slice(1)}.png`, fullPage: true })
+    await page.unroute('**/art/paris.png')
+  }
+})
+
+test('counter contrast follows the artwork during zoom, pan, and resize', async ({ page }) => {
+  await page.route('**/art/paris.png', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><path fill="white" d="M0 0h1024v1536H0z"/><path fill="#111" d="M0 512h1024v1024H0z"/></svg>' }))
+  await open(page)
+  const art = page.locator('.picture')
+  const counter = page.getByLabel('0 of 6 cats found')
+  await expect(counter).toHaveCSS('color', 'rgb(0, 0, 0)')
+  for (let i = 0; i < 3; i++) await art.press('+')
+  await expect(counter).toHaveCSS('color', 'rgb(255, 255, 255)')
+  for (let i = 0; i < 2; i++) await art.press('ArrowUp')
+  await expect(counter).toHaveCSS('color', 'rgb(0, 0, 0)')
+  await page.setViewportSize({ width: 320, height: 568 })
+  await expect(counter).toHaveCSS('color', 'rgb(0, 0, 0)')
+  await art.press('0')
+  await expect(counter).toHaveCSS('color', 'rgb(0, 0, 0)')
 })
 
 test('the full picture stays usable on narrow and short landscape screens', async ({ page }, info) => {

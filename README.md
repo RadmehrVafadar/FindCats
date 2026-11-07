@@ -2,15 +2,15 @@
 
 A quiet hidden-cat game in a travel sketchbook, drawn in graphite on warm ivory paper.
 
-![Find the Cats: five places, thirty cats, take your time.](docs/images/cover.svg)
+![Find the Cats: ten places, sixty cats, take your time.](docs/images/cover.svg)
 
-![Paris fills the available height, with a small cat counter directly over the drawing.](docs/images/gameplay.png)
+![Seoul fills the available height, with a light cat counter clearly visible over its dark tiled eaves.](docs/images/gameplay.png)
 
 ## Features
 
-- Five places to explore: Paris, Venice, Kyoto, Lisbon, and Istanbul.
+- Ten places to explore, including Amsterdam, Prague, Chefchaouen, Havana, and Seoul.
 - Six cats in every drawing, with a gentle pencil-lightening reveal.
-- Just the illustration and a small cat counter, with the whole picture kept in view.
+- An unboxed cat counter that switches between light and dark ink as you explore.
 - Pinch and drag to look closer, or use the keyboard.
 - Find all six to travel onward; pictures shuffle without repeating, including on refresh.
 - A development-only editor for tracing cat outlines and forgiving tap regions.
