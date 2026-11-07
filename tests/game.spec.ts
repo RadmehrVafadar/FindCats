@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
 import { puzzles } from '../src/puzzles'
 
 const parisSpots = [[205, 1165], [914, 980], [235, 605], [807, 728], [240, 289], [942, 216]]
@@ -225,9 +226,14 @@ test('the development editor previews and exports separate cat polygons', async 
   await expect(page.getByText('1 / 6 cats found')).toBeVisible()
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Export puzzle JSON' }).click()
-  expect((await download).suggestedFilename()).toBe('paris.json')
+  const exported = await download
+  expect(exported.suggestedFilename()).toBe('paris.json')
+  expect(JSON.parse(await readFile((await exported.path())!, 'utf8')).image).toBe('./assets/art/paris.png')
   await page.getByRole('button', { name: 'Edit outlines' }).click()
   await page.getByRole('button', { name: 'Add cat' }).click()
   await page.getByRole('button', { name: 'Export puzzle JSON' }).click()
   await expect(page.getByRole('alert')).toContainText('save both polygons')
+  await page.getByRole('link', { name: 'Back to the game' }).click()
+  await expect(page).toHaveURL('http://127.0.0.1:5173/')
+  await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toBeVisible()
 })

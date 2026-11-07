@@ -50,7 +50,7 @@ test('zoom stays within the artwork and preserves the requested focal point', ()
 
 test('each scene has six distinct cats with valid, separate polygons', () => {
   for (const puzzle of puzzles) {
-    const artwork = readFileSync(new URL(`../public${puzzle.image}`, import.meta.url))
+    const artwork = readFileSync(new URL(`../public/${puzzle.image}`, import.meta.url))
     assert.equal(artwork.subarray(1, 4).toString(), 'PNG')
     assert.equal(artwork.readUInt32BE(16), puzzle.width, `${puzzle.id} artwork width matches targets`)
     assert.equal(artwork.readUInt32BE(20), puzzle.height, `${puzzle.id} artwork height matches targets`)

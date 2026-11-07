@@ -43,7 +43,8 @@ State is saved under `find-the-cats:v1` in localStorage.
 Invalid stored values are discarded or filtered against current puzzle data.
 Storage failures fall back to in-memory play.
 Returning to a picture begins a fresh round; refreshing intentionally opens another picture.
-Fonts and illustrations are served locally.
+Vite builds with `base: './'`, so scripts, styles, fonts, and illustrations resolve relative to the game document.
+The same build supports a standalone root URL and a prefix-stripping reverse proxy at `/find-cats/`.
 
 ## Key files
 
@@ -53,10 +54,11 @@ Fonts and illustrations are served locally.
 - `src/Picture.tsx` - artwork, reveal filter, and input handling.
 - `src/Progress.tsx` - unboxed progress and adaptive background contrast.
 - `src/Editor.tsx` - development-only polygon tracing and JSON export.
-- `public/art/` - finished images and their exact generation prompts.
-- `public/fonts/` - bundled Lora and DM Sans fonts and licenses.
+- `public/assets/art/` - finished images and their exact generation prompts.
+- `public/assets/fonts/` - bundled Lora and DM Sans fonts and licenses.
 - `tests/game.test.ts` - state and geometry checks.
 - `tests/game.spec.ts` - browser gameplay, gesture, and editor checks.
+- `tests/assets.spec.ts` - production assets, gameplay, and refresh at `/` and behind a prefix-stripping `/find-cats/` proxy.
 
 ## Decisions and gotchas
 
@@ -67,7 +69,7 @@ Save the precise reveal outline and the forgiving tap region separately.
 Some cats use explicit tap regions to bridge narrow legs or a long tail while their reveal outlines follow the silhouettes.
 Preview the puzzle to test the targets, then export JSON.
 The editor keeps changes in memory until export; reloading discards unexported work.
-Copy uploaded artwork into `public/art/` using its original filename and add the exported record to `src/puzzles.ts`.
+Copy uploaded artwork into `public/assets/art/` using its original filename and add the exported record to `src/puzzles.ts`.
 Replace artwork before tracing targets because image edits can move the cats.
 Review every cat for recognizable anatomy, fair visibility, and accidental extra cats.
 
@@ -75,3 +77,16 @@ The built-in image generation tool produced all ten illustrations.
 Exact prompts are stored in sibling `.prompt.txt` files.
 The current artwork uses full-resolution PNGs, approximately 4.3 MB per scene.
 Automated phone checks use Chromium device emulation; physical-phone playtesting and difficulty feedback are still needed.
+
+## Deployment and proxy setup
+
+Deploy `dist/` at the standalone Vercel origin root.
+In the portfolio, keep the external rewrite `/find-cats/:path*` to `https://find-cats-nine.vercel.app/:path*`, including scripts, styles, fonts, and images.
+Place it before any portfolio catch-all so asset requests cannot return portfolio HTML.
+Redirect `/find-cats` to `/find-cats/` and preserve that trailing slash, since document-relative URLs otherwise resolve at the portfolio root.
+Ensure the portfolio's slash normalization does not redirect `/find-cats/` back to `/find-cats`.
+Do not add a portfolio-root `/assets/` rewrite; those paths belong to the portfolio.
+No HTML response rewriting, CORS changes, or asset-host configuration is required.
+
+`npm run test:e2e` builds once and checks both a root preview and an HTTP proxy that strips `/find-cats/`, rejects requests outside the mount, and preserves upstream content types.
+Production checks load all ten illustrations, inspect script/style/font/image request paths, find cats, advance scenes, zoom, and refresh.

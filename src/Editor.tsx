@@ -39,7 +39,7 @@ export default function Editor() {
       picture.onload = () => {
         if (sequence !== uploadSequence.current) return
         if (picture.width > 8192 || picture.height > 8192) { setError('Use an image no larger than 8192 pixels on either edge.'); return }
-        setPuzzle({ id: 'new-location', version: 1, title: '', location: '', image: `/art/${file.name}`, width: picture.width, height: picture.height, cats: [] })
+        setPuzzle({ id: 'new-location', version: 1, title: '', location: '', image: `./assets/art/${file.name}`, width: picture.width, height: picture.height, cats: [] })
         setImage(src); setSelected(''); setTrace([]); setFound([]); setError(''); setPreview(false)
       }
       picture.src = src
@@ -78,7 +78,7 @@ export default function Editor() {
   }
 
   return <main className="editor">
-    <h1>Puzzle editor</h1><a href="/">Back to the game</a>
+    <h1>Puzzle editor</h1><a href="./">Back to the game</a>
     <div className="editor-layout">
       <div>{preview ? <Picture key={`${puzzle.id}-${image}`} puzzle={{ ...puzzle, image }} found={found} onFind={id => setFound(previous => previous.includes(id) ? previous : [...previous, id])} />
         : <svg className="editor-canvas" viewBox={`0 0 ${puzzle.width} ${puzzle.height}`} onClick={addPoint} aria-label="Click to trace the selected cat">
@@ -102,7 +102,7 @@ export default function Editor() {
         {preview && <p role="status">{found.length} / {puzzle.cats.length} cats found</p>}
         <button onClick={exportPuzzle}>Export puzzle JSON</button>
         {error && <p role="alert">{error}</p>}
-        <p>Copy uploaded artwork to <code>public/art/</code> using its original filename, and add the exported record to <code>src/puzzles.ts</code>.</p>
+        <p>Copy uploaded artwork to <code>public/assets/art/</code> using its original filename, and add the exported record to <code>src/puzzles.ts</code>.</p>
       </aside>
     </div>
   </main>
