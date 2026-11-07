@@ -30,6 +30,11 @@ h1 { margin: 0; font-family: 'Lora', Georgia, serif; font-size: 23px; font-weigh
 .progress[data-tone="light"] { --counter-edge: #000; color: #fff; }
 .progress > span { -webkit-text-stroke: 2px var(--counter-edge); paint-order: stroke fill; }
 .progress svg { height: 22px; width: 22px; }
+.audio-controls { position: fixed; z-index: 1; left: max(12px, env(safe-area-inset-left)); top: max(12px, env(safe-area-inset-top)); display: flex; gap: 4px; }
+.audio-controls button { display: grid; place-items: center; width: 44px; height: 44px; padding: 11px; border: 0; border-radius: 0; background: var(--paper); color: var(--quiet); }
+.audio-controls button[aria-pressed="true"] { color: var(--ink); }
+.audio-controls button:hover { background: #e9dfce; }
+.audio-controls svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .picture-wrap { position: relative; width: min(100%, calc(100dvh * 2 / 3)); aspect-ratio: 2 / 3; background: #e9dfce; box-shadow: 0 7px 32px #58462d0c; }
 .picture { display: block; width: 100%; height: 100%; overflow: hidden; touch-action: none; user-select: none; cursor: crosshair; }
 .picture:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }

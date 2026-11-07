@@ -25,6 +25,14 @@ The next queued illustration is preloaded.
 `Picture.tsx` renders the artwork, tap polygons, and clipped reveal images inside one SVG viewBox.
 An SVG color-transfer filter lifts dark pencil marks toward ivory instead of merely multiplying brightness.
 Found IDs are deduplicated, and repeated clicks never increase progress.
+Each newly found cat plays one of three locally bundled meows, cycling from a random starting clip without consecutive repeats.
+The top-left audio controls independently toggle cat sounds and optional looping lofi music, “Cat caffe” by TAD.
+Meows default to on; their mute preference is stored separately under `find-the-cats:meows`, with an in-memory fallback.
+Music starts off on each visit and plays only after the player enables it, so loading the game never autoplays music.
+Music continues across scene changes, pauses while the tab is hidden, and resumes on return when the browser permits playback.
+Muting immediately stops the relevant audio; failed playback never blocks gameplay.
+Both buttons expose their state with `aria-pressed` and provide 44px touch targets without changing the artwork's fit.
+All four recordings are CC0; original sources and creator credits are in `public/assets/audio/CREDITS.md`.
 Pointer movement beyond seven CSS pixels is treated as dragging.
 Pinch gestures transform the same viewBox and suppress cat selection for the entire gesture.
 Zoom ranges from 100% to 400%, clamped to the illustration bounds.
@@ -51,6 +59,8 @@ The same build supports a standalone root URL and a prefix-stripping reverse pro
 - `src/puzzles.ts` - scene metadata, image dimensions, and cat polygons.
 - `src/game.ts` - queue, validation, hit testing, and camera math.
 - `src/App.tsx` - progress and automatic scene transitions.
+- `src/useAudio.ts` - meow variation, music, mute preference, and audio lifecycle.
+- `src/AudioControls.tsx` - accessible sound and music toggles.
 - `src/Picture.tsx` - artwork, reveal filter, and input handling.
 - `src/Progress.tsx` - unboxed progress and adaptive background contrast.
 - `src/Editor.tsx` - development-only polygon tracing and JSON export.
