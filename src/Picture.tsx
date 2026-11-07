@@ -3,6 +3,7 @@ import type { KeyboardEvent, PointerEvent } from 'react'
 import { clampCamera, HOME, pointInPolygon, zoomCamera } from './game'
 import type { Camera } from './game'
 import type { Point, Puzzle } from './puzzles'
+import Progress from './Progress'
 
 type Props = { puzzle: Puzzle; found: string[]; onFind: (id: string) => void }
 type Touch = { x: number; y: number }
@@ -12,6 +13,7 @@ export default function Picture({ puzzle, found, onFind }: Props) {
   const [camera, setCamera] = useState<Camera>(HOME)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
+  const picture = useRef<SVGSVGElement>(null)
   const touches = useRef(new Map<number, Touch>())
   const gesture = useRef({ x: 0, y: 0, moved: false, multi: false })
   const { width, height } = puzzle
@@ -77,7 +79,7 @@ export default function Picture({ puzzle, found, onFind }: Props) {
   }
 
   return <div className="picture-wrap">
-    <svg className={`picture ${camera.zoom > 1 ? 'is-zoomed' : ''}`} viewBox={`${camera.x} ${camera.y} ${width / camera.zoom} ${height / camera.zoom}`} width={width} height={height}
+    <svg ref={picture} className={`picture ${camera.zoom > 1 ? 'is-zoomed' : ''}`} viewBox={`${camera.x} ${camera.y} ${width / camera.zoom} ${height / camera.zoom}`} width={width} height={height}
       role="group" aria-label={`${puzzle.location} hidden cat illustration`} aria-describedby="picture-help" tabIndex={0}
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onKeyDown={key}
       onLostPointerCapture={event => touches.current.delete(event.pointerId)}>
@@ -104,6 +106,7 @@ export default function Picture({ puzzle, found, onFind }: Props) {
           }} />
       </g>)}
     </svg>
+    <Progress image={puzzle.image} picture={picture} found={found.length} total={puzzle.cats.length} />
     {!loaded && <div className="picture-message" role="status">{failed ? <><span>The picture couldn’t load.</span><button onClick={() => window.location.reload()}>Try again</button></> : 'Opening your sketchbook…'}</div>}
   </div>
 }

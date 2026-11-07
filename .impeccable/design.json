@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-07T14:30:10.647Z",
+  "generatedAt": "2026-11-07T15:20:07.61Z",
   "title": "Design System: Find the Cats",
   "extensions": {
     "colorMeta": {
@@ -73,6 +73,34 @@
           "oklch(83.57% 0.0110 89.72)",
           "oklch(95% 0.0110 89.72)"
         ]
+      },
+      "counter-dark": {
+        "displayName": "Counter Dark",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "role": "neutral"
+      },
+      "counter-light": {
+        "displayName": "Counter Light",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "role": "neutral"
       }
     },
     "typographyMeta": {
@@ -82,7 +110,7 @@
       },
       "progress": {
         "displayName": "Found Count",
-        "purpose": "Compact DM Sans counter with tabular numerals."
+        "purpose": "Compact tabular counter with adaptive black or white ink and a thin opposite-color edge."
       }
     },
     "shadows": [
@@ -116,9 +144,9 @@
       "name": "Found Counter",
       "kind": "custom",
       "refersTo": "progress",
-      "description": "Unboxed cat outline and tabular count over the top-right of the illustration; pointer input passes through.",
-      "html": "<div class=\"ds-progress\" role=\"status\" aria-label=\"2 of 6 cats found\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.35\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 11 4 3l6 4a10 10 0 0 1 4 0l6-4-.5 8c1 1.3 1.5 2.5 1.5 4 0 4-4 6-9 6s-9-2-9-6c0-1.5.5-2.7 1.5-4Z\"/><path d=\"M8 13h.01M16 13h.01M11 16h2l-1 1-1-1ZM2 14l4 1M2 18l4-1M22 14l-4 1M22 18l-4-1\"/></svg><span>2<span class=\"ds-divider\"> / </span>6</span></div>",
-      "css": ".ds-progress{display:flex;align-items:center;gap:9px;color:var(--ink,#484738);font:14px 'DM Sans',sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}.ds-progress svg{width:22px;height:22px}.ds-divider{color:#8c8473}@media(max-width:600px){.ds-progress{gap:6px;font-size:13px}.ds-progress svg{width:20px;height:20px}}"
+      "description": "Unboxed cat outline and tabular count; switches between black and white using artwork luminance during zoom, pan, and resize.",
+      "html": "<div class=\"ds-progress\" role=\"status\" aria-label=\"2 of 6 cats found\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.35\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 11 4 3l6 4a10 10 0 0 1 4 0l6-4-.5 8c1 1.3 1.5 2.5 1.5 4 0 4-4 6-9 6s-9-2-9-6c0-1.5.5-2.7 1.5-4Z\" stroke=\"var(--counter-edge)\" stroke-width=\"3.35\"/><path d=\"M4.5 11 4 3l6 4a10 10 0 0 1 4 0l6-4-.5 8c1 1.3 1.5 2.5 1.5 4 0 4-4 6-9 6s-9-2-9-6c0-1.5.5-2.7 1.5-4Z\"/><path d=\"M8 13h.01M16 13h.01M11 16h2l-1 1-1-1ZM2 14l4 1M2 18l4-1M22 14l-4 1M22 18l-4-1\" stroke=\"var(--counter-edge)\" stroke-width=\"3.35\"/><path d=\"M8 13h.01M16 13h.01M11 16h2l-1 1-1-1ZM2 14l4 1M2 18l4-1M22 14l-4 1M22 18l-4-1\"/></svg><span>2<span class=\"ds-divider\"> / </span>6</span></div>",
+      "css": ".ds-progress{display:flex;align-items:center;gap:9px;--counter-edge:#fff;color:#000;font:14px 'DM Sans',sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}.ds-progress svg{width:22px;height:22px}.ds-progress[data-tone=light]{--counter-edge:#000;color:#fff}.ds-progress>span{-webkit-text-stroke:2px var(--counter-edge);paint-order:stroke fill}@media(max-width:600px){.ds-progress{gap:6px;font-size:13px}.ds-progress svg{width:20px;height:20px}}"
     },
     {
       "name": "Retry Button",
@@ -138,7 +166,7 @@
   ],
   "narrative": {
     "northStar": "The Travel Sketchbook",
-    "overview": "Detailed graphite streetscapes on textured ivory paper carry the experience.\r\nAn unboxed counter leaves the portrait artwork dominant, while muted green acknowledges completion and keyboard focus.",
+    "overview": "Detailed graphite streetscapes on textured ivory paper carry the experience.\nAn unboxed counter leaves the portrait artwork dominant, while muted green identifies keyboard focus and authoring controls.",
     "keyCharacteristics": [
       "Portrait travel illustrations with cats integrated into the architecture.",
       "Warm paper, graphite text, and a restrained botanical accent.",
