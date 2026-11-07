@@ -24,9 +24,17 @@ export default function Progress({ image, picture, found, total }: Props) {
       const bounds = art.getBoundingClientRect(), label = element.getBoundingClientRect()
       if (!bounds.width || !bounds.height) return
       const view = art.viewBox.baseVal
-      context.clearRect(0, 0, 16, 8)
+      // Areas outside the centered artwork show the page's ivory paper.
+      context.fillStyle = '#f5f0e6'
+      context.fillRect(0, 0, 16, 8)
+      context.save()
+      context.beginPath()
+      context.rect((bounds.x - label.x) / label.width * 16, (bounds.y - label.y) / label.height * 8,
+        bounds.width / label.width * 16, bounds.height / label.height * 8)
+      context.clip()
       context.drawImage(source, view.x + (label.x - bounds.x) / bounds.width * view.width, view.y + (label.y - bounds.y) / bounds.height * view.height,
         label.width / bounds.width * view.width, label.height / bounds.height * view.height, 0, 0, 16, 8)
+      context.restore()
       const { data } = context.getImageData(0, 0, 16, 8)
       const linear = (value: number) => {
         const channel = value / 255
@@ -47,11 +55,13 @@ export default function Progress({ image, picture, found, total }: Props) {
     const resize = new ResizeObserver(schedule)
     resize.observe(art)
     resize.observe(element)
+    window.addEventListener('resize', schedule)
     const camera = new MutationObserver(schedule)
     camera.observe(art, { attributes: true, attributeFilter: ['viewBox'] })
     return () => {
       source.onload = null
       resize.disconnect()
+      window.removeEventListener('resize', schedule)
       camera.disconnect()
       if (frame !== null) cancelAnimationFrame(frame)
     }

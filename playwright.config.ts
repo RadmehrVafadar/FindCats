@@ -8,9 +8,13 @@ export default defineConfig({
   projects: [
     { name: 'desktop', testIgnore: 'assets.spec.ts', use: { viewport: { width: 1440, height: 1000 } } },
     { name: 'mobile', testIgnore: 'assets.spec.ts', use: { ...devices['iPhone 13'], viewport: { width: 390, height: 844 }, defaultBrowserType: 'chromium' } },
+    { name: 'safari-mobile', testIgnore: 'assets.spec.ts', use: { ...devices['iPhone 13'], browserName: 'webkit' } },
+    { name: 'safari-standalone', testMatch: 'assets.spec.ts', use: { browserName: 'webkit', baseURL: 'http://127.0.0.1:5174/' } },
+    { name: 'safari-proxy-slash', testMatch: 'assets.spec.ts', use: { browserName: 'webkit', baseURL: 'http://127.0.0.1:5175/find-cats/' } },
     { name: 'standalone', testMatch: 'assets.spec.ts', use: { baseURL: 'http://127.0.0.1:5174/' } },
     { name: 'proxy', testMatch: 'assets.spec.ts', use: { baseURL: 'http://127.0.0.1:5175/find-cats/' } },
     { name: 'proxy-slashless', testMatch: 'assets.spec.ts', use: { baseURL: 'http://127.0.0.1:5175/find-cats?from=portfolio#game' } },
+    { name: 'safari-proxy', testMatch: 'assets.spec.ts', use: { ...devices['iPhone 13'], browserName: 'webkit', baseURL: 'http://127.0.0.1:5175/find-cats?from=portfolio#game' } },
   ],
   webServer: [
     { command: 'npm run dev -- --port 5173', url: 'http://127.0.0.1:5173/', reuseExistingServer: !process.env.CI },

@@ -13,11 +13,11 @@ Each cat needs a forgiving touch area and an independent silhouette for its ligh
 A new browser starts in Paris, with the other nine locations shuffled behind it.
 The collection includes Venice, Kyoto, Lisbon, Istanbul, Amsterdam, Prague, Chefchaouen, Havana, and Seoul.
 Completing a scene shows six of six and advances automatically after 2.2 seconds.
-The unboxed cat icon and counter sit over the top-right of the illustration and let taps pass through to the artwork.
-The counter samples a small patch of the underlying image, mapped through the current SVG viewBox, and chooses black or white ink for higher luminance contrast.
+The unboxed cat icon and counter sit at the top-right of the viewport and let taps pass through to the artwork.
+The counter samples a small patch of the underlying image, mapped through the current SVG viewBox with ivory paper outside the artwork, and chooses black or white ink for higher luminance contrast.
 Camera changes, image loading, and resizing schedule at most one sample per animation frame.
 Thin opposite-color edges keep the icon and fraction readable across pencil strokes and mixed light and dark details.
-The picture uses the largest uncropped 2:3 rectangle that fits the viewport, with no space reserved for a header, footer, or zoom controls.
+The picture is centered in the dynamic viewport and uses the largest uncropped 2:3 rectangle that fits it, with no space reserved for a header, footer, or zoom controls.
 Refreshing also advances to the next queued scene.
 Every available scene appears before the collection reshuffles, with no immediate repeat at a collection boundary.
 The next queued illustration is preloaded.
@@ -76,7 +76,7 @@ Review every cat for recognizable anatomy, fair visibility, and accidental extra
 The built-in image generation tool produced all ten illustrations.
 Exact prompts are stored in sibling `.prompt.txt` files.
 The current artwork uses full-resolution PNGs, approximately 4.3 MB per scene.
-Automated phone checks use Chromium device emulation; physical-phone playtesting and difficulty feedback are still needed.
+Automated phone checks use Chromium and WebKit device emulation; physical-phone playtesting and difficulty feedback are still needed.
 
 ## Deployment and proxy setup
 
@@ -86,6 +86,7 @@ Place it before any portfolio catch-all so asset requests cannot return portfoli
 Rewrite `/find-cats` to `https://find-cats-nine.vercel.app/` as well; do not append a literal `*` to that destination.
 The HTML sets its document base to `/find-cats/` before loading assets when visited at slashless `/find-cats`, preserving the requested URL, query string, and fragment without a redirect.
 The production HTML starts bundles and styles through inline loaders so speculative browser preloads cannot request portfolio-root assets before that base is applied.
+The module loader resolves its URL explicitly against `document.baseURI` because WebKit otherwise resolves the inline dynamic import against the slashless document URL and requests portfolio-root assets.
 Do not add a portfolio-root `/assets/` rewrite; those paths belong to the portfolio.
 No HTML response rewriting, CORS changes, or asset-host configuration is required.
 

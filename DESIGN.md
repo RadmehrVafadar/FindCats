@@ -49,7 +49,7 @@ An unboxed counter leaves the portrait artwork dominant, while muted green ident
 
 - Portrait travel illustrations with cats integrated into the architecture.
 - Warm paper, graphite text, and a restrained botanical accent.
-- A small cat icon and counter directly over the artwork, with no surrounding game chrome.
+- A small cat icon and counter at the top-right of the page, with no surrounding game chrome.
 
 ## Colors
 
@@ -77,10 +77,10 @@ At the phone breakpoint, progress becomes (13px).
 ## Layout
 
 The centered game column has a portrait image ratio of (2:3).
-Its width is the minimum of the full viewport width and the small viewport height converted to the image ratio.
-The artwork reaches the top of the viewport and fills the limiting dimension without cropping cats or stretching the drawing.
+Its width is the minimum of the full viewport width and the dynamic viewport height converted to the image ratio.
+The artwork is centered horizontally and vertically in the dynamic viewport without cropping cats or stretching the drawing.
 No height is reserved for a heading, footer, or zoom controls.
-The counter sits inside the top-right image corner, inset by (16px) or the relevant device safe area, whichever is larger.
+The counter is fixed to the top-right viewport corner, inset by (16px) or the relevant device safe area, whichever is larger.
 Phones and short landscape screens use the same proportional fit.
 
 ## Elevation & Depth
@@ -109,7 +109,7 @@ Reduced-motion preferences remove this animation.
 
 A small outline cat icon accompanies a tabular found-count fraction.
 The overlay lets pointer input pass through to the illustration.
-The counter samples the image beneath its current position and selects the higher-contrast black or white ink.
+The counter samples the image beneath its current position, using ivory paper outside the artwork, and selects the higher-contrast black or white ink.
 It updates during zooming, panning, loading, and resizing, with a (1px) opposite-color edge on the lettering and cat icon.
 The slash uses the same ink as the count.
 Completion keeps the adaptive ink, shows six of six, and advances automatically after (2200ms).

@@ -12,7 +12,7 @@ npm run dev                                      # Start the local game and deve
 npm run lint                                     # Check TypeScript, React, and configuration files.
 npm test                                         # Run state and geometry tests.
 node --experimental-strip-types --test --test-name-pattern="zoom" tests/game.test.ts # Run a focused unit test.
-npx playwright install chromium                  # Install the browser required for E2E checks.
+npx playwright install chromium webkit           # Install the browsers required for E2E checks.
 npm run test:e2e                                  # Run desktop and phone browser checks.
 npm run test:e2e -- --grep "two-finger"            # Run one focused browser check.
 npm run build                                    # Typecheck and build static output.
