@@ -22,11 +22,11 @@ npm run preview                                  # Serve the production build.
 ## Repo map
 
 ```text
-src/          Game, scene data, editor, and styles.
-public/art/   Finished artwork and exact generation prompts.
-public/fonts/ Local fonts and their licenses.
-tests/        State, geometry, and browser checks.
-docs/         Implemented concepts and artwork workflow.
+src/                 Game, scene data, editor, and styles.
+public/assets/art/   Finished artwork and exact generation prompts.
+public/assets/fonts/ Local fonts and their licenses.
+tests/               State, geometry, and browser checks.
+docs/                Implemented concepts and artwork workflow.
 ```
 
 ## Conventions

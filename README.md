@@ -25,8 +25,9 @@ npm run dev
 ```
 
 Open the local URL printed by Vite.
-The polygon editor lives at `/editor` during development.
-Build with `npm run build`, then serve `dist/` as a static site.
+The polygon editor lives at `/find-cats/editor` during development.
+Build with `npm run build`, then mount `dist/` at `/find-cats/` on your static host.
+Scripts, styles, fonts, and artwork are requested through `/find-cats/assets/`.
 Fonts and artwork are bundled locally; playing needs no account, API key, or backend.
 
 ## A closer look

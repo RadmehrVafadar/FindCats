@@ -18,7 +18,7 @@ const sceneSpots: Record<string, number[][]> = {
 }
 
 async function open(page: Page) {
-  await page.goto('/')
+  await page.goto('/find-cats/')
   await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
   await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toBeVisible()
 }
@@ -90,7 +90,7 @@ test('refresh advances without repeating before the full collection is exhausted
 for (const puzzle of puzzles) {
   test(`${puzzle.location} accepts all six real cat coordinates`, async ({ page }, info) => {
     await page.addInitScript(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
-    await page.goto('/')
+    await page.goto('/find-cats/')
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
     await expect(page.getByRole('group', { name: `${puzzle.location} hidden cat illustration` })).toBeVisible()
     if (puzzle.id === 'seoul') await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(255, 255, 255)')
@@ -217,7 +217,7 @@ test('the full picture stays usable on narrow and short landscape screens', asyn
 })
 
 test('the development editor previews and exports separate cat polygons', async ({ page }) => {
-  await page.goto('/editor')
+  await page.goto('/find-cats/editor')
   await expect(page.getByRole('heading', { name: 'Puzzle editor' })).toBeVisible()
   await page.getByRole('button', { name: 'Preview puzzle' }).click()
   await expect(page.getByText('Opening your sketchbook…')).toBeHidden()

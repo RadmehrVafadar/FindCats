@@ -43,7 +43,7 @@ State is saved under `find-the-cats:v1` in localStorage.
 Invalid stored values are discarded or filtered against current puzzle data.
 Storage failures fall back to in-memory play.
 Returning to a picture begins a fresh round; refreshing intentionally opens another picture.
-Fonts and illustrations are served locally.
+Vite serves the game at `/find-cats/`, with built scripts, styles, fonts, and illustrations requested through `/find-cats/assets/`.
 
 ## Key files
 
@@ -53,21 +53,22 @@ Fonts and illustrations are served locally.
 - `src/Picture.tsx` - artwork, reveal filter, and input handling.
 - `src/Progress.tsx` - unboxed progress and adaptive background contrast.
 - `src/Editor.tsx` - development-only polygon tracing and JSON export.
-- `public/art/` - finished images and their exact generation prompts.
-- `public/fonts/` - bundled Lora and DM Sans fonts and licenses.
+- `public/assets/art/` - finished images and their exact generation prompts.
+- `public/assets/fonts/` - bundled Lora and DM Sans fonts and licenses.
 - `tests/game.test.ts` - state and geometry checks.
 - `tests/game.spec.ts` - browser gameplay, gesture, and editor checks.
+- `tests/assets.spec.ts` - production-build asset paths and availability under `/find-cats/`.
 
 ## Decisions and gotchas
 
-Open `/editor` using the development server.
+Open `/find-cats/editor` using the development server.
 Choose an existing illustration or upload PNG, JPEG, or WebP artwork.
 Enter its ID and location, add a cat, and trace at least three points around each region.
 Save the precise reveal outline and the forgiving tap region separately.
 Some cats use explicit tap regions to bridge narrow legs or a long tail while their reveal outlines follow the silhouettes.
 Preview the puzzle to test the targets, then export JSON.
 The editor keeps changes in memory until export; reloading discards unexported work.
-Copy uploaded artwork into `public/art/` using its original filename and add the exported record to `src/puzzles.ts`.
+Copy uploaded artwork into `public/assets/art/` using its original filename and add the exported record to `src/puzzles.ts`.
 Replace artwork before tracing targets because image edits can move the cats.
 Review every cat for recognizable anatomy, fair visibility, and accidental extra cats.
 
