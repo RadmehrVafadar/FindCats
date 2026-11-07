@@ -1,6 +1,38 @@
 import { test, expect } from '@playwright/test'
 import { puzzles } from '../src/puzzles'
 
+test('production music and meows play from the mounted asset paths', async ({ page, baseURL }) => {
+  await page.addInitScript(() => {
+    const media: HTMLMediaElement[] = []
+    Object.assign(window, { playedMedia: media })
+    const play = HTMLMediaElement.prototype.play
+    HTMLMediaElement.prototype.play = function () {
+      media.push(this)
+      return play.call(this)
+    }
+  })
+  await page.goto(baseURL!)
+  await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
+  const music = page.getByRole('button', { name: 'Relaxing music' })
+  await music.click()
+  await expect(music).toHaveAttribute('aria-pressed', 'true')
+  await expect.poll(() => page.evaluate(() => {
+    const track = (window as unknown as { playedMedia: HTMLMediaElement[] }).playedMedia[0]
+    return track && !track.paused && track.currentTime > 0
+  })).toBe(true)
+  await page.getByRole('button', { name: 'Cat 1', exact: true }).press('Enter')
+  await expect.poll(() => page.evaluate(() => {
+    const meow = (window as unknown as { playedMedia: HTMLMediaElement[] }).playedMedia[1]
+    return meow && meow.currentTime > 0
+  })).toBe(true)
+  const paths = await page.evaluate(() => (window as unknown as { playedMedia: HTMLMediaElement[] }).playedMedia.map(audio => new URL(audio.src).pathname))
+  const mount = `${new URL(baseURL!).pathname.replace(/\/$/, '')}/`
+  expect(paths).toHaveLength(2)
+  expect(paths.every(path => path.startsWith(`${mount}assets/audio/`))).toBe(true)
+  await music.click()
+  expect(await page.evaluate(() => (window as unknown as { playedMedia: HTMLMediaElement[] }).playedMedia[0].paused)).toBe(true)
+})
+
 test('production assets and gameplay work at the root and behind a prefix-stripping proxy', async ({ page, request, baseURL }, info) => {
   const mount = new URL(baseURL!)
   const mountPath = `${mount.pathname.replace(/\/$/, '')}/`
@@ -34,6 +66,12 @@ test('production assets and gameplay work at the root and behind a prefix-stripp
     const response = await request.get(new URL(puzzle.image, new URL(mountPath, mount)).href)
     expect(response.status()).toBe(200)
     expect(response.headers()['content-type']).toContain('image/png')
+  }
+  for (const file of ['cat-caffe.mp3', 'meow-1.wav', 'meow-2.wav', 'meow-3.wav']) {
+    const response = await request.get(new URL(`./assets/audio/${file}`, new URL(mountPath, mount)).href)
+    expect(response.status(), file).toBe(200)
+    expect(response.headers()['content-type'], file).toMatch(/^audio\//)
+    expect((await response.body()).length, file).toBeGreaterThan(90000)
   }
   await page.screenshot({ path: `.impeccable/review/${info.project.name}-production.png` })
   const art = page.getByRole('group', { name: 'Paris hidden cat illustration' })

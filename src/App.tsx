@@ -3,6 +3,8 @@ import Picture from './Picture'
 import { findCat, nextScene, readSession, STORAGE_KEY, shuffle } from './game'
 import type { Session } from './game'
 import { puzzles } from './puzzles'
+import AudioControls from './AudioControls'
+import useAudio from './useAudio'
 
 function start(): Session {
   let previous: Session | null = null
@@ -14,6 +16,7 @@ function start(): Session {
 
 export default function App() {
   const [session, setSession] = useState(start)
+  const audio = useAudio()
   const puzzle = puzzles.find(p => p.id === session.current)!
   const found = session.found[puzzle.id] ?? []
   const complete = found.length === puzzle.cats.length
@@ -32,6 +35,12 @@ export default function App() {
   }, [complete, advance])
 
   return <main className="game" aria-label={`Find the cats in ${puzzle.location}`}>
-    <Picture key={puzzle.id} puzzle={puzzle} found={found} onFind={id => setSession(previous => findCat(previous, puzzle, id))} />
+    <Picture key={puzzle.id} puzzle={puzzle} found={found} onFind={id => {
+      const next = findCat(session, puzzle, id)
+      if (next === session) return
+      setSession(next)
+      audio.playMeow()
+    }} />
+    <AudioControls {...audio} />
   </main>
 }
