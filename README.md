@@ -25,9 +25,10 @@ npm run dev
 ```
 
 Open the local URL printed by Vite.
-The polygon editor lives at `/find-cats/editor` during development.
-Build with `npm run build`, then mount `dist/` at `/find-cats/` on your static host.
-Scripts, styles, fonts, and artwork are requested through `/find-cats/assets/`.
+The polygon editor lives at `/editor` during development.
+Build with `npm run build`, then serve `dist/` at `/` or reverse-proxy it under `/find-cats/`.
+Asset URLs are relative, so the same build works at either location.
+The proxy must preserve the trailing slash on `/find-cats/` and forward its assets with the prefix stripped; see [proxy setup](docs/gameplay.md#deployment-and-proxy-setup).
 Fonts and artwork are bundled locally; playing needs no account, API key, or backend.
 
 ## A closer look

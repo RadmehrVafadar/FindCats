@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
 import { puzzles } from '../src/puzzles'
 
 const parisSpots = [[205, 1165], [914, 980], [235, 605], [807, 728], [240, 289], [942, 216]]
@@ -18,7 +19,7 @@ const sceneSpots: Record<string, number[][]> = {
 }
 
 async function open(page: Page) {
-  await page.goto('/find-cats/')
+  await page.goto('/')
   await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
   await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toBeVisible()
 }
@@ -90,7 +91,7 @@ test('refresh advances without repeating before the full collection is exhausted
 for (const puzzle of puzzles) {
   test(`${puzzle.location} accepts all six real cat coordinates`, async ({ page }, info) => {
     await page.addInitScript(id => localStorage.setItem('find-the-cats:v1', JSON.stringify({ current: id === 'paris' ? 'venice' : 'paris', remaining: [id], found: {} })), puzzle.id)
-    await page.goto('/find-cats/')
+    await page.goto('/')
     await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
     await expect(page.getByRole('group', { name: `${puzzle.location} hidden cat illustration` })).toBeVisible()
     if (puzzle.id === 'seoul') await expect(page.getByLabel('0 of 6 cats found')).toHaveCSS('color', 'rgb(255, 255, 255)')
@@ -217,7 +218,7 @@ test('the full picture stays usable on narrow and short landscape screens', asyn
 })
 
 test('the development editor previews and exports separate cat polygons', async ({ page }) => {
-  await page.goto('/find-cats/editor')
+  await page.goto('/editor')
   await expect(page.getByRole('heading', { name: 'Puzzle editor' })).toBeVisible()
   await page.getByRole('button', { name: 'Preview puzzle' }).click()
   await expect(page.getByText('Opening your sketchbook…')).toBeHidden()
@@ -225,9 +226,14 @@ test('the development editor previews and exports separate cat polygons', async 
   await expect(page.getByText('1 / 6 cats found')).toBeVisible()
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Export puzzle JSON' }).click()
-  expect((await download).suggestedFilename()).toBe('paris.json')
+  const exported = await download
+  expect(exported.suggestedFilename()).toBe('paris.json')
+  expect(JSON.parse(await readFile((await exported.path())!, 'utf8')).image).toBe('./assets/art/paris.png')
   await page.getByRole('button', { name: 'Edit outlines' }).click()
   await page.getByRole('button', { name: 'Add cat' }).click()
   await page.getByRole('button', { name: 'Export puzzle JSON' }).click()
   await expect(page.getByRole('alert')).toContainText('save both polygons')
+  await page.getByRole('link', { name: 'Back to the game' }).click()
+  await expect(page).toHaveURL('http://127.0.0.1:5173/')
+  await expect(page.getByRole('group', { name: 'Paris hidden cat illustration' })).toBeVisible()
 })

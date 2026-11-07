@@ -43,7 +43,8 @@ State is saved under `find-the-cats:v1` in localStorage.
 Invalid stored values are discarded or filtered against current puzzle data.
 Storage failures fall back to in-memory play.
 Returning to a picture begins a fresh round; refreshing intentionally opens another picture.
-Vite serves the game at `/find-cats/`, with built scripts, styles, fonts, and illustrations requested through `/find-cats/assets/`.
+Vite builds with `base: './'`, so scripts, styles, fonts, and illustrations resolve relative to the game document.
+The same build supports a standalone root URL and a prefix-stripping reverse proxy at `/find-cats/`.
 
 ## Key files
 
@@ -57,11 +58,11 @@ Vite serves the game at `/find-cats/`, with built scripts, styles, fonts, and il
 - `public/assets/fonts/` - bundled Lora and DM Sans fonts and licenses.
 - `tests/game.test.ts` - state and geometry checks.
 - `tests/game.spec.ts` - browser gameplay, gesture, and editor checks.
-- `tests/assets.spec.ts` - production-build asset paths and availability under `/find-cats/`.
+- `tests/assets.spec.ts` - production assets, gameplay, and refresh at `/` and behind a prefix-stripping `/find-cats/` proxy.
 
 ## Decisions and gotchas
 
-Open `/find-cats/editor` using the development server.
+Open `/editor` using the development server.
 Choose an existing illustration or upload PNG, JPEG, or WebP artwork.
 Enter its ID and location, add a cat, and trace at least three points around each region.
 Save the precise reveal outline and the forgiving tap region separately.
@@ -76,3 +77,16 @@ The built-in image generation tool produced all ten illustrations.
 Exact prompts are stored in sibling `.prompt.txt` files.
 The current artwork uses full-resolution PNGs, approximately 4.3 MB per scene.
 Automated phone checks use Chromium device emulation; physical-phone playtesting and difficulty feedback are still needed.
+
+## Deployment and proxy setup
+
+Deploy `dist/` at the standalone Vercel origin root.
+In the portfolio, keep the external rewrite `/find-cats/:path*` to `https://find-cats-nine.vercel.app/:path*`, including scripts, styles, fonts, and images.
+Place it before any portfolio catch-all so asset requests cannot return portfolio HTML.
+Redirect `/find-cats` to `/find-cats/` and preserve that trailing slash, since document-relative URLs otherwise resolve at the portfolio root.
+Ensure the portfolio's slash normalization does not redirect `/find-cats/` back to `/find-cats`.
+Do not add a portfolio-root `/assets/` rewrite; those paths belong to the portfolio.
+No HTML response rewriting, CORS changes, or asset-host configuration is required.
+
+`npm run test:e2e` builds once and checks both a root preview and an HTTP proxy that strips `/find-cats/`, rejects requests outside the mount, and preserves upstream content types.
+Production checks load all ten illustrations, inspect script/style/font/image request paths, find cats, advance scenes, zoom, and refresh.
